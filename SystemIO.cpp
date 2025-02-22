@@ -13,7 +13,8 @@ SystemIO::SystemIO()
 
 void SystemIO::setup()
 {
-    for (int x = 0; x < 4; x++) pinMode(DigitalInputs[x], INPUT);
+    for (int x = 0; x < 4; x++) 
+        pinMode(DigitalInputs[x], INPUT);
     
     for (int y = 0; y < 4; y++) {
         pinMode(DigitalOutputs[y][0], OUTPUT);

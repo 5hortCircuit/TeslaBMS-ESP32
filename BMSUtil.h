@@ -41,7 +41,7 @@ public:
 
         if (Logger::isDebug())
         {
-            SERIALCONSOLE.print("Sending: ");
+            SERIALCONSOLE.print("00000 - DEBUG: Sending: ");
             SERIALCONSOLE.print(addrByte, HEX);
             SERIALCONSOLE.print(" ");
             for (int x = 1; x < dataLen; x++) {
@@ -58,7 +58,7 @@ public:
     static int getReply(uint8_t *data, int maxLen)
     { 
         int numBytes = 0; 
-        if (Logger::isDebug()) SERIALCONSOLE.print("Reply: ");
+        if (Logger::isDebug()) SERIALCONSOLE.print("00001 - DEBUG: Reply: ");
         while (SERIAL.available() && numBytes < maxLen)
         {
             data[numBytes] = SERIAL.read();

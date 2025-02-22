@@ -1,7 +1,7 @@
 #pragma once
 #include "config.h"
 #include "BMSModule.h"
-#include <due_can.h>
+//#include <due_can.h>
 
 class BMSModuleManager
 {
@@ -15,14 +15,19 @@ public:
     void sleepBoards();
     void wakeBoards();
     void getAllVoltTemp();
-    void readSetpoints();
-    void setBatteryID();
+    //void readSetpoints();
+    //void setBatteryID();
     float getPackVoltage();
+    float getPackDeltaV();
     float getAvgTemperature();
     float getAvgCellVolt();
-    void processCANMsg(CAN_FRAME &frame);
+    //void processCANMsg(CAN_FRAME &frame);
     void printPackSummary();
     void printPackDetails();
+    void setBalanceStartVoltage(float balVal);
+    float getBalanceStartVoltage();
+    void setBalanceHyst(float hystVal);
+    float getBalanceHyst();
 
 private:
     float packVolt;                         // All modules added together
@@ -34,8 +39,8 @@ private:
     int numFoundModules;                    // The number of modules that seem to exist
     bool isFaulted;
     
-    void sendBatterySummary();
-    void sendModuleSummary(int module);
-    void sendCellDetails(int module, int cell);
+    //void sendBatterySummary();
+    //void sendModuleSummary(int module);
+    //void sendCellDetails(int module, int cell);
     
 };

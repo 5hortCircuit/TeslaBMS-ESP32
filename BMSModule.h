@@ -9,6 +9,7 @@ public:
     float getCellVoltage(int cell);
     float getLowCellV();
     float getHighCellV();
+    float getCellDeltaV();
     float getAverageV();
     float getLowTemp();
     float getHighTemp();
@@ -31,11 +32,16 @@ public:
     void setExists(bool ex);
     void balanceCells();
     uint8_t getBalancingState(int cell);
+    void setBalanceStartVoltage(float value);
+    float getBalanceStartVoltage();
+    void setBalanceHyst(float value);
+    float getBalanceHyst();
 
 private:
     float cellVolt[6];          // calculated as 16 bit value * 6.250 / 16383 = volts
     float lowestCellVolt[6];
     float highestCellVolt[6];
+    float moduleCellDelta;
     float moduleVolt;          // calculated as 16 bit value * 33.333 / 16383 = volts
     float temperatures[2];     // Don't know the proper scaling at this point    
     float lowestTemperature;
@@ -50,6 +56,9 @@ private:
     int CUVFaults;
     int goodPackets;
     int badPackets;
+    float balanceStartVoltage;
+    float balanceHyst;
+    float balanceStop;
 
     uint8_t moduleAddress;     //1 to 0x3E
 };

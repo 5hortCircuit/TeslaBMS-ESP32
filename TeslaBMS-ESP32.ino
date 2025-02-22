@@ -1,25 +1,24 @@
-#if defined (__arm__) && defined (__SAM3X8E__)
-#include <chip.h>
-#endif
-
 #include <Arduino.h>
+#include <HardwareSerial.h>
 #include "Logger.h"
 #include "SerialConsole.h"
 #include "BMSModuleManager.h"
 #include "SystemIO.h"
-#include <due_can.h>
-#include <due_wire.h>
-#include <Wire_EEPROM.h>
+//#include <due_can.h>
+//#include <due_wire.h>
+//#include <Wire_EEPROM.h>
 
 //#define BMS_BAUD  612500
 #define BMS_BAUD  617647
 //#define BMS_BAUD  608695
 
+HardwareSerial SerialPort(2);  // Define UART2 for the BMS
 BMSModuleManager bms;
-EEPROMSettings settings;
+//EEPROMSettings settings;
 SerialConsole console;
 uint32_t lastUpdate;
 
+/*
 //This code only applicable to Due to fixup lack of functionality in the arduino core.
 #if defined (__arm__) && defined (__SAM3X8E__)
 void serialSpecialInit(Usart *pUsart, uint32_t baudRate)
@@ -45,7 +44,9 @@ void serialSpecialInit(Usart *pUsart, uint32_t baudRate)
   pUsart->US_CR = UART_CR_RXEN | UART_CR_TXEN;
 }
 #endif
+*/
 
+/*
 void loadSettings()
 {
     EEPROM.read(EEPROM_PAGE, settings);
@@ -72,7 +73,9 @@ void loadSettings()
         
     Logger::setLoglevel((Logger::LogLevel)settings.logLevel);
 }
+*/
 
+/*
 void initializeCAN()
 {
     uint32_t id;
@@ -87,51 +90,56 @@ void initializeCAN()
         Can0.setRXFilter(1, id, 0x1FFF0000ul, true);
     }
 }
+*/
 
 void setup() 
 {
     delay(4000);  //just for easy debugging. It takes a few seconds for USB to come up properly on most OS's
     SERIALCONSOLE.begin(115200);
+    SERIALCONSOLE.println();
+    SERIALCONSOLE.println("+--------------------------------------------+");
+    SERIALCONSOLE.println("| Hardware Connections:                      |");
+    SERIALCONSOLE.println("|  - IO16: ESP_Rx     -> BLU (2) or YEL (10) |");
+    SERIALCONSOLE.println("|  - IO17: ESP_Tx     -> YEL (12) or BLU (4) |");
+    SERIALCONSOLE.println("|  - IO18: ESP_FltIn  -> GRY (13)            |");
+    SERIALCONSOLE.println("+--------------------------------------------+");
     SERIALCONSOLE.println("Starting up!");
-    SERIAL.begin(BMS_BAUD);
-#if defined (__arm__) && defined (__SAM3X8E__)
-    serialSpecialInit(USART0, BMS_BAUD); //required for Due based boards as the stock core files don't support 612500 baud.
-#endif
+    SERIAL.begin(BMS_BAUD, SERIAL_8N1, 16, 17);  // Init UART2 for BMS -> 16-ESP_RxD 17-ESP_TxD);
 
     SERIALCONSOLE.println("Started serial interface to BMS.");
 
-    pinMode(13, INPUT);
+    pinMode(18, INPUT_PULLUP); // BLUE LED ON=FAULT  OFF=OK
 
-    loadSettings();
-    initializeCAN();
+    //loadSettings();
+    //initializeCAN();
 
-    systemIO.setup();
+    //systemIO.setup();
 
-    bms.renumberBoardIDs();
+    //bms.renumberBoardIDs();
 
-    //Logger::setLoglevel(Logger::Debug);
+    Logger::setLoglevel(Logger::Debug); //Debug
 
     lastUpdate = 0;
 
-    bms.clearFaults();
+    //bms.clearFaults();
 }
 
 void loop() 
 {
-    CAN_FRAME incoming;
+    //CAN_FRAME incoming;
 
     console.loop();
 
     if (millis() > (lastUpdate + 1000))
     {    
         lastUpdate = millis();
-        bms.balanceCells();
         bms.getAllVoltTemp();
+        bms.balanceCells();
     }
 
-    if (Can0.available()) {
-        Can0.read(incoming);
-        bms.processCANMsg(incoming);
-    }
+    //if (Can0.available()) {
+    //    Can0.read(incoming);
+    //    bms.processCANMsg(incoming);
+    //}
 }
 
